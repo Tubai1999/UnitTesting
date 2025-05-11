@@ -1,7 +1,9 @@
 package com.Testing.MockitoTesting.service;
 
 import com.Testing.MockitoTesting.Entity.Employee;
+import com.Testing.MockitoTesting.dto.EmployeeDTO;
 import com.Testing.MockitoTesting.repository.EmployeeRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -9,8 +11,10 @@ import java.util.Optional;
 @Service
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
-    EmployeeService(EmployeeRepository employeeRepository){
+    private final ModelMapper modelMapper;
+    EmployeeService(EmployeeRepository employeeRepository, ModelMapper modelMapper){
         this.employeeRepository = employeeRepository;
+        this.modelMapper = modelMapper;
     }
 
     public Optional<Employee> getEmployee(Long id){
@@ -18,5 +22,11 @@ public class EmployeeService {
 //        System.out.println("inisde service layer");
 //       employee.ifPresent((e)-> System.out.println(e.getName()));
         return employee;
+    }
+
+    public EmployeeDTO createNewEmployee(EmployeeDTO employeeDTO){
+        Employee newEmployee = modelMapper.map(employeeDTO,Employee.class);
+        Employee savedEmployee = employeeRepository.save(newEmployee);
+        return modelMapper.map(savedEmployee,EmployeeDTO.class);
     }
 }
