@@ -25,8 +25,12 @@ public class EmployeeService {
     }
 
     public EmployeeDTO createNewEmployee(EmployeeDTO employeeDTO){
-        Employee newEmployee = modelMapper.map(employeeDTO,Employee.class);
+//        Employee newEmployee = modelMapper.map(employeeDTO,Employee.class);
+        Employee newEmployee = new Employee();
+        newEmployee.setName(employeeDTO.getName());
+        newEmployee.setYearOfExperience(employeeDTO.getYearOfExperience());
         Employee savedEmployee = employeeRepository.save(newEmployee);
+        System.out.println(savedEmployee.getName());
         return modelMapper.map(savedEmployee,EmployeeDTO.class);
     }
 }

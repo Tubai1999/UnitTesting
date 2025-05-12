@@ -24,7 +24,8 @@ public class EmployeeController {
 
     @PostMapping()
     public EmployeeDTO createNewEmployee(@RequestBody EmployeeDTO employeeDTO){
-
-        return employeeDTO;
+        EmployeeDTO dto = employeeService.createNewEmployee(employeeDTO);
+        System.out.println(dto.getName());
+        return dto;
     }
 }
