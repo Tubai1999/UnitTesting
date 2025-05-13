@@ -15,11 +15,15 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 //@DataJpaTest
 @ExtendWith(MockitoExtension.class)
@@ -47,16 +51,26 @@ public class EmployeeServiceTest {
         when(employeeRepository.findById(mockedEmployee.getId())).thenReturn(Optional.of(mockedEmployee));
 
         //Act
-        Optional<Employee> employee = employeeService.getEmployee(mockedEmployee.getId());
+        Employee employee = employeeService.getEmployee(mockedEmployee.getId());
 
         //Assert
-        assertThat(employee.get().getId()).isEqualTo(mockedEmployee.getId());
-        assertThat(employee.get().getName()).isEqualTo("Tridib");
+        assertThat(employee.getId()).isEqualTo(mockedEmployee.getId());
+        assertThat(employee.getName()).isEqualTo("Tridib");
+    }
+
+    @Test
+    void testFindById_whenIdIsNotPresent_throwException(){
+        //Arrange
+        when(employeeRepository.findById(999L)).thenReturn(Optional.empty());
+
+        //Act and Assert
+        assertThatThrownBy(()-> employeeService.getEmployee(999L))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("Resource not found");
     }
 
     @Test
     void createNewEmployee_returnEmployeeDTO(){
-
         Employee mockedEmployee = Employee.builder()
                 .name("Nitin")
                         .yearOfExperience(20)
@@ -69,8 +83,25 @@ public class EmployeeServiceTest {
         //Assert
 
         assertThat(employeeDTO.getName()).isEqualTo(mockedEmployee.getName());
+    }
 
+    @Test
+    void failToCreateEmployee_throwException(){
+        Employee mockedEmployee = Employee.builder()
+                .name("Nitin")
+                .yearOfExperience(200)
+                .build();
+        //Arrange
+        when(employeeRepository.findByYearOfExperience(12))
+                .thenReturn(List.of(mockedEmployee));
 
+        EmployeeDTO mockEmployeeDto = modelMapper.map(mockedEmployee,EmployeeDTO.class);
+        //Act //Assert
+        assertThatThrownBy(()->employeeService.createNewEmployee(mockEmployeeDto))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("same yearOfExperience already exit");
+
+        verify(employeeRepository,never()).save(any());
     }
 
 }
