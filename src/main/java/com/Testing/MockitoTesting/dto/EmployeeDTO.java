@@ -1,15 +1,17 @@
 package com.Testing.MockitoTesting.dto;
 
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
-@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmployeeDTO {
     private Long id;
     private int yearOfExperience;
     private String name;
+
+
 }
