@@ -40,6 +40,7 @@ class EmployeeControllerTestIT {
                 .name("Tridib")
                 .yearOfExperience(12)
                 .build();
+        employeeRepository.deleteAll();
     }
 
     @Test
@@ -56,6 +57,34 @@ class EmployeeControllerTestIT {
                     assertThat(dto.getName()).isEqualTo(savedEmployee.getName());
                         }
                         );
+    }
+
+    @Test
+    void testGetEmployeeById_failure(){
+        Employee savedEmployee = employeeRepository.save(employee);
+        webTestClient.get()
+                .uri("/home/220")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testCreateEmployee_Success(){
+        webTestClient.post()
+                .uri("/home")
+                .bodyValue(employeeDTO)
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    @Test
+    void testCreateEmployee_Failure(){
+        employeeRepository.save(employee);
+        webTestClient.post()
+                .uri("/home")
+                .bodyValue(employeeDTO)
+                .exchange()
+                .expectStatus().is5xxServerError();
     }
 
 }
