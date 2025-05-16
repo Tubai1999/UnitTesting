@@ -92,7 +92,7 @@ public class EmployeeServiceTest {
                 .yearOfExperience(200)
                 .build();
         //Arrange
-        when(employeeRepository.findByYearOfExperience(12))
+        when(employeeRepository.findByYearOfExperience(200))
                 .thenReturn(List.of(mockedEmployee));
 
         EmployeeDTO mockEmployeeDto = modelMapper.map(mockedEmployee,EmployeeDTO.class);
